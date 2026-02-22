@@ -6,7 +6,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.nsergiodev.calckmarket.presentation.screens.addproduct.AddProductScreen
 import com.nsergiodev.calckmarket.presentation.screens.home.HomeScreen
-import com.nsergiodev.calckmarket.presentation.screens.market.MarketScreen
 
 @Composable
 fun NavigationController() {

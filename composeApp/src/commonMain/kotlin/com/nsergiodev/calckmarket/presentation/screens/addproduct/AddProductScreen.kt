@@ -58,6 +58,7 @@ import androidx.compose.ui.window.DialogProperties
 import com.nsergiodev.calckmarket.core.utils.CurrencyVisualTransformation
 import com.nsergiodev.calckmarket.core.utils.asCurrency
 import com.nsergiodev.calckmarket.core.utils.isEmptySafe
+import com.nsergiodev.calckmarket.domain.delegates.Product
 import com.nsergiodev.calckmarket.domain.model.Buy
 import com.nsergiodev.calckmarket.domain.model.ProductAdd
 import com.nsergiodev.calckmarket.presentation.screens.home.dummyCurrentBuys
@@ -136,6 +137,24 @@ fun AddProductScreen(
                 onConfirm = { marketName = it }
             )
 
+            var showDialog by remember { mutableStateOf(false) }
+            var selectedProduct by remember { mutableStateOf<ProductAdd?>(null) }
+
+            if (selectedProduct != null) {
+                EditProductDialog(
+                    showDialog = showDialog,
+                    product = selectedProduct!!,
+                    onDismiss = { showDialog = false },
+                    onConfirm = { updatedProduct ->
+                        listProducts = listProducts.map {
+                            if (it.id == updatedProduct.id) updatedProduct else it
+                        }
+                        selectedProduct = null
+                        showDialog = false
+                    }
+                )
+            }
+
             Form(
                 keyboard,
                 focusManager,
@@ -149,7 +168,13 @@ fun AddProductScreen(
                 }
             )
 
-            Products(listProducts, listStateProductState)
+            Products(products = listProducts,
+                listStateProductState = listStateProductState,
+                onClickProduct = {
+                    selectedProduct = it
+                    showDialog = true
+                }
+            )
 
             Footer(
                 valueToPay = valueToPay,
@@ -500,6 +525,7 @@ fun ColumnScope.AddProductButton(
 @Composable
 private fun ColumnScope.Products(
     products: List<ProductAdd>,
+    onClickProduct: (ProductAdd) -> Unit = {},
     listStateProductState: LazyListState
 ) {
     Card(
@@ -526,7 +552,7 @@ private fun ColumnScope.Products(
                 reverseLayout = true
             ) {
                 items(products) { item ->
-                    ItemProductList(item)
+                    ItemProductList(item, onClickProduct)
                 }
             }
         }
@@ -534,10 +560,14 @@ private fun ColumnScope.Products(
 }
 
 @Composable
-private fun ItemProductList(item: ProductAdd) {
+private fun ItemProductList(
+    item: ProductAdd,
+    onEditProduct: (ProductAdd) -> Unit
+) {
     Card(
         modifier = Modifier.fillMaxWidth(),
-        elevation = CardDefaults.cardElevation(defaultElevation = 3.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 3.dp),
+        onClick = { onEditProduct.invoke(item) }
     ) {
         ListItem(
             modifier = Modifier,
@@ -620,5 +650,71 @@ private fun PriceInput(
             keyboardType = KeyboardType.Number,
             imeAction = ImeAction.Next
         )
+    )
+}
+
+@Composable
+fun EditProductDialog(
+    showDialog: Boolean,
+    product: ProductAdd,
+    onDismiss: () -> Unit,
+    onConfirm: (ProductAdd) -> Unit
+) {
+    if (!showDialog) return
+
+    var name by remember { mutableStateOf(product.name) }
+    var quantity by remember { mutableStateOf(product.quantity.toString()) }
+    var unitPrice by remember { mutableStateOf(product.price.toString()) }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Editar producto") },
+        text = {
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                OutlinedTextField(
+                    value = name,
+                    onValueChange = { name = it },
+                    label = { Text("Nombre") },
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                OutlinedTextField(
+                    value = quantity,
+                    onValueChange = { quantity = it },
+                    label = { Text("Cantidad") },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                OutlinedTextField(
+                    value = unitPrice,
+                    onValueChange = { unitPrice = it },
+                    label = { Text("Valor unitario") },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = {
+                val updated = product.copy(
+                    name = name,
+                    quantity = quantity.toDoubleOrNull() ?: product.quantity,
+                    price = unitPrice.toDoubleOrNull() ?: product.price,
+                    total = (quantity.toDoubleOrNull() ?: 0.0) * (unitPrice.toDoubleOrNull() ?: 0.0)
+                )
+                onConfirm(updated)
+            }) {
+                Text("Guardar")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Cancelar")
+            }
+        }
     )
 }

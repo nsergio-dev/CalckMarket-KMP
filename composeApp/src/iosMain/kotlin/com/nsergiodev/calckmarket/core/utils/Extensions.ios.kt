@@ -14,8 +14,8 @@ actual fun Any?.asCurrency(): String {
     val formatter = NSNumberFormatter().apply {
         numberStyle = NSNumberFormatterCurrencyStyle
         locale = NSLocale(localeIdentifier = "es_CO")
-        minimumFractionDigits = 2u
-        maximumFractionDigits = 2u
+        minimumFractionDigits = 0u
+        maximumFractionDigits = 0u
     }
     return formatter.stringFromNumber(NSNumber(number)) ?: "$this"
 }

@@ -10,4 +10,7 @@ sealed class Screens {
     @Serializable
     object AddProductScreen: Screens()
 
+    @Serializable
+    object PurchaseDetailScreen: Screens()
+
 }

@@ -10,8 +10,8 @@ actual fun Any?.asCurrency(): String {
         else -> 0.0
     }
     val formatter = NumberFormat.getCurrencyInstance(Locale.getDefault()).apply {
-        minimumFractionDigits = 2
-        maximumFractionDigits = 2
+        minimumFractionDigits = 0
+        maximumFractionDigits = 0
     }
     return formatter.format(number)
 }

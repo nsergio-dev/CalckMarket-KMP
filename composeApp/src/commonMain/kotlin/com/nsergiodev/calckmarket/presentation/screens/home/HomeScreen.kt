@@ -40,7 +40,7 @@ fun HomeScreen(
 ) {
 
     val listState = rememberLazyListState()
-    LaunchedEffect(Unit) {
+    /*LaunchedEffect(Unit) {
         List(20) {
             val buy = com.nsergiodev.calckmarket.domain.model.Buy(
                 marketName = "Market Name $it",
@@ -58,7 +58,7 @@ fun HomeScreen(
             listState.scrollToItem(dummyCurrentBuys.lastIndex)
         }
 
-    }
+    }*/
     Scaffold(
         floatingActionButton = {
             FloatingActionButton(

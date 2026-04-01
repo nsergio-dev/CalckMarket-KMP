@@ -8,7 +8,10 @@ sealed class Screens {
     object Home: Screens()
 
     @Serializable
-    object AddProductScreen: Screens()
+    object NewPurchaseScreen: Screens()
+
+    @Serializable
+    object ProductsScreen: Screens()
 
     @Serializable
     object PurchaseDetailScreen: Screens()

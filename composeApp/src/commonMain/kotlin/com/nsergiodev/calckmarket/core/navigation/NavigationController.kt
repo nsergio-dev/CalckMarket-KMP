@@ -12,9 +12,10 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.nsergiodev.calckmarket.presentation.screens.addproduct.AddProductScreen
+import com.nsergiodev.calckmarket.presentation.screens.addproduct.NewPurchaseScreen
 import com.nsergiodev.calckmarket.presentation.screens.detail.PurchaseDetailScreen
 import com.nsergiodev.calckmarket.presentation.screens.home.HomeScreen
+import com.nsergiodev.calckmarket.presentation.screens.products.ProductsScreen
 import kotlinx.coroutines.launch
 
 @Composable
@@ -38,16 +39,21 @@ fun NavigationController() {
         NavHost(
             navController = navController,
             startDestination = Screens.Home,
-            modifier = Modifier.padding(paddingValues) // Respetar el espacio del Scaffold
+            modifier = Modifier.padding(paddingValues)
         ) {
             composable<Screens.Home> {
-                HomeScreen {
-                    navController.navigate(Screens.AddProductScreen)
-                }
+                HomeScreen(
+                    onNavigate = {
+                        navController.navigate(Screens.NewPurchaseScreen)
+                    },
+                    openProductsScreen = {
+                        navController.navigate(Screens.ProductsScreen)
+                    }
+                )
             }
 
-            composable<Screens.AddProductScreen> {
-                AddProductScreen(
+            composable<Screens.NewPurchaseScreen> {
+                NewPurchaseScreen(
                     onBackClick = {
                         navController.popBackStack()
                     },
@@ -56,6 +62,14 @@ fun NavigationController() {
                         navController.navigate(Screens.PurchaseDetailScreen)
                     }
 
+                )
+            }
+
+            composable<Screens.ProductsScreen> {
+                ProductsScreen(
+                    onAddClick = {
+                        //navController.navigate(Screens.NewPurchaseScreen)
+                    }
                 )
             }
 

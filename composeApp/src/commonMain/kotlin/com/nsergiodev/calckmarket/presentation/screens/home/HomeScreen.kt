@@ -18,10 +18,10 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -36,7 +36,8 @@ import com.nsergiodev.calckmarket.domain.delegates.Buy
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
-    onNavigate: (Screens) -> Unit
+    onNavigate: (Screens) -> Unit,
+    openProductsScreen: () -> Unit
 ) {
 
     val listState = rememberLazyListState()
@@ -62,7 +63,7 @@ fun HomeScreen(
     Scaffold(
         floatingActionButton = {
             FloatingActionButton(
-                onClick = { onNavigate(Screens.AddProductScreen) }
+                onClick = { onNavigate(Screens.NewPurchaseScreen) }
             ) {
                 Icon(
                     imageVector = Icons.Default.Add,
@@ -98,6 +99,16 @@ fun HomeScreen(
 
             if (dummyCurrentBuys.isEmpty()) {
                 Text("Aqui apareceran tus ultimas compras")
+                OutlinedButton(
+                    content = { Text("Ver ultimas compras") },
+                    onClick = {
+
+                    }
+                )
+                OutlinedButton(
+                    content = { Text("Productos") },
+                    onClick = openProductsScreen
+                )
             } else {
                 Card(
                     modifier = Modifier

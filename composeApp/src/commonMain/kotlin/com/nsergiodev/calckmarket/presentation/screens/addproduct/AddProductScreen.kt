@@ -38,7 +38,7 @@ import com.nsergiodev.calckmarket.presentation.screens.addproduct.components.Pay
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddProductScreen(
+fun NewPurchaseScreen(
     onBackClick: () -> Unit = {},
     onPayClick: () -> Unit = {}
 ) {

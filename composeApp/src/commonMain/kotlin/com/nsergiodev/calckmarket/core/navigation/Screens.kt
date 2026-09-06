@@ -1,13 +1,16 @@
 package com.nsergiodev.calckmarket.core.navigation
+
 import kotlinx.serialization.Serializable
 
 @Serializable
 sealed class Screens {
 
     @Serializable
-    object Home: Screens()
+    data object Home : Screens()
 
     @Serializable
-    object AddProductScreen: Screens()
+    data object AddProductScreen : Screens()
 
+    @Serializable
+    data class PurchaseDetail(val buyId: String) : Screens()
 }

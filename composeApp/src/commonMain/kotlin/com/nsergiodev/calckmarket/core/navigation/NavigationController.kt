@@ -4,12 +4,13 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.nsergiodev.calckmarket.presentation.screens.addproduct.AddProductScreen
-import com.nsergiodev.calckmarket.presentation.screens.home.HomeScreen
+import androidx.navigation.toRoute
+import com.nsergiodev.calckmarket.features.addproduct.presentation.screen.AddProductScreen
+import com.nsergiodev.calckmarket.features.detail.presentation.screen.PurchaseDetailScreen
+import com.nsergiodev.calckmarket.features.home.presentation.screen.HomeScreen
 
 @Composable
 fun NavigationController() {
-
     val navController = rememberNavController()
 
     NavHost(
@@ -17,9 +18,14 @@ fun NavigationController() {
         startDestination = Screens.Home
     ) {
         composable<Screens.Home> {
-            HomeScreen {
-                navController.navigate(Screens.AddProductScreen)
-            }
+            HomeScreen(
+                onNavigateToAddProduct = {
+                    navController.navigate(Screens.AddProductScreen)
+                },
+                onNavigateToDetail = { buyId ->
+                    navController.navigate(Screens.PurchaseDetail(buyId = buyId))
+                }
+            )
         }
 
         composable<Screens.AddProductScreen> {
@@ -27,12 +33,25 @@ fun NavigationController() {
                 onBackClick = {
                     navController.popBackStack()
                 },
-                onPayClick = {
-                    navController.popBackStack()
+                onPurchaseFinished = { buyId ->
+                    navController.navigate(Screens.PurchaseDetail(buyId = buyId)) {
+                        popUpTo<Screens.Home>()
+                    }
                 }
-
             )
         }
 
+        composable<Screens.PurchaseDetail> { backStackEntry ->
+            val route = backStackEntry.toRoute<Screens.PurchaseDetail>()
+            PurchaseDetailScreen(
+                buyId = route.buyId,
+                onClose = {
+                    navController.popBackStack()
+                },
+                onFinish = {
+                    navController.popBackStack(Screens.Home, inclusive = false)
+                }
+            )
+        }
     }
 }

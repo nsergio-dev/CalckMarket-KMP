@@ -4,9 +4,11 @@ import com.nsergiodev.calckmarket.features.home.domain.model.Buy
 
 data class HomeUiState(
     val buys: List<Buy> = emptyList(),
+    val inProgressBuy: Buy? = null,
     val totalSpent: Double = 0.0,
     val totalPurchases: Int = 0,
     val averagePerPurchase: Double = 0.0,
     val isLoading: Boolean = false,
-    val selectedBuyForDetails: Buy? = null
+    val selectedBuyForDetails: Buy? = null,
+    val showDraftChoiceDialog: Boolean = false
 )

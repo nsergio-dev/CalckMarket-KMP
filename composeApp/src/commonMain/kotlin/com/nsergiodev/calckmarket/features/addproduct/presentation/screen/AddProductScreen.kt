@@ -35,7 +35,7 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import org.koin.compose.viewmodel.koinViewModel
 import com.nsergiodev.calckmarket.features.addproduct.presentation.component.EditProductDialog
 import com.nsergiodev.calckmarket.features.addproduct.presentation.component.EmptyCartDialog
 import com.nsergiodev.calckmarket.features.addproduct.presentation.component.MarketSelector
@@ -51,7 +51,7 @@ import kotlinx.coroutines.launch
 fun AddProductScreen(
     onBackClick: () -> Unit,
     onPurchaseFinished: (buyId: String) -> Unit,
-    viewModel: AddProductViewModel = viewModel { AddProductViewModel() }
+    viewModel: AddProductViewModel = koinViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val focusManager = LocalFocusManager.current

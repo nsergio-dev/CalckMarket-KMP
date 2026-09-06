@@ -40,7 +40,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import org.koin.compose.viewmodel.koinViewModel
+import org.koin.core.parameter.parametersOf
 import com.nsergiodev.calckmarket.features.detail.presentation.component.MarketSummaryCard
 import com.nsergiodev.calckmarket.features.detail.presentation.component.PaymentSummaryCard
 import com.nsergiodev.calckmarket.features.detail.presentation.component.SummaryProductCard
@@ -52,7 +53,7 @@ fun PurchaseDetailScreen(
     buyId: String,
     onClose: () -> Unit,
     onFinish: () -> Unit,
-    viewModel: PurchaseDetailViewModel = viewModel { PurchaseDetailViewModel(buyId = buyId) }
+    viewModel: PurchaseDetailViewModel = koinViewModel { parametersOf(buyId) }
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val buy = uiState.buy

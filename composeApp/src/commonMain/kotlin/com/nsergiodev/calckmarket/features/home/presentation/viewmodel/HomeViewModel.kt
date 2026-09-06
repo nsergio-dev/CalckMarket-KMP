@@ -2,10 +2,11 @@ package com.nsergiodev.calckmarket.features.home.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.nsergiodev.calckmarket.features.home.data.repository.HomeRepositoryImpl
 import com.nsergiodev.calckmarket.features.home.domain.model.Buy
 import com.nsergiodev.calckmarket.features.home.domain.usecase.DeleteBuyUseCase
+import com.nsergiodev.calckmarket.features.home.domain.usecase.DiscardInProgressBuyUseCase
 import com.nsergiodev.calckmarket.features.home.domain.usecase.GetBuysUseCase
+import com.nsergiodev.calckmarket.features.home.domain.usecase.GetInProgressBuyUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -15,8 +16,10 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class HomeViewModel(
-    private val getBuysUseCase: GetBuysUseCase = GetBuysUseCase(HomeRepositoryImpl()),
-    private val deleteBuyUseCase: DeleteBuyUseCase = DeleteBuyUseCase(HomeRepositoryImpl())
+    private val getBuysUseCase: GetBuysUseCase,
+    private val getInProgressBuyUseCase: GetInProgressBuyUseCase,
+    private val discardInProgressBuyUseCase: DiscardInProgressBuyUseCase,
+    private val deleteBuyUseCase: DeleteBuyUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(HomeUiState())
@@ -24,6 +27,7 @@ class HomeViewModel(
 
     init {
         observeBuys()
+        observeInProgressBuy()
     }
 
     private fun observeBuys() {
@@ -45,6 +49,41 @@ class HomeViewModel(
                 }
             }
             .launchIn(viewModelScope)
+    }
+
+    private fun observeInProgressBuy() {
+        getInProgressBuyUseCase()
+            .onEach { draftBuy ->
+                _uiState.update { it.copy(inProgressBuy = draftBuy) }
+            }
+            .launchIn(viewModelScope)
+    }
+
+    fun onNewPurchaseClicked(onNavigateToNew: () -> Unit) {
+        if (_uiState.value.inProgressBuy != null) {
+            _uiState.update { it.copy(showDraftChoiceDialog = true) }
+        } else {
+            onNavigateToNew()
+        }
+    }
+
+    fun onDismissDraftDialog() {
+        _uiState.update { it.copy(showDraftChoiceDialog = false) }
+    }
+
+    fun onDiscardDraftAndStartNew(onNavigateToNew: () -> Unit) {
+        viewModelScope.launch {
+            discardInProgressBuyUseCase()
+            _uiState.update { it.copy(showDraftChoiceDialog = false) }
+            onNavigateToNew()
+        }
+    }
+
+    fun onDiscardDraft() {
+        viewModelScope.launch {
+            discardInProgressBuyUseCase()
+            _uiState.update { it.copy(showDraftChoiceDialog = false) }
+        }
     }
 
     fun onSelectBuy(buy: Buy?) {

@@ -28,25 +28,42 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import org.koin.compose.viewmodel.koinViewModel
 import com.nsergiodev.calckmarket.features.home.presentation.component.BuyItemCard
+import com.nsergiodev.calckmarket.features.home.presentation.component.DraftChoiceDialog
 import com.nsergiodev.calckmarket.features.home.presentation.component.EmptyHistoryView
 import com.nsergiodev.calckmarket.features.home.presentation.component.HomeSummaryHeader
+import com.nsergiodev.calckmarket.features.home.presentation.component.InProgressBuyCard
 import com.nsergiodev.calckmarket.features.home.presentation.viewmodel.HomeViewModel
 
 @Composable
 fun HomeScreen(
     onNavigateToAddProduct: () -> Unit,
     onNavigateToDetail: (buyId: String) -> Unit,
-    viewModel: HomeViewModel = viewModel { HomeViewModel() }
+    viewModel: HomeViewModel = koinViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
+
+    // Dialog when tapping "+ Nueva Compra" while having an in-progress draft
+    if (uiState.showDraftChoiceDialog && uiState.inProgressBuy != null) {
+        DraftChoiceDialog(
+            draftBuy = uiState.inProgressBuy!!,
+            onContinue = {
+                viewModel.onDismissDraftDialog()
+                onNavigateToAddProduct()
+            },
+            onDiscardAndStartNew = {
+                viewModel.onDiscardDraftAndStartNew(onNavigateToAddProduct)
+            },
+            onDismiss = viewModel::onDismissDraftDialog
+        )
+    }
 
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
         floatingActionButton = {
             ExtendedFloatingActionButton(
-                onClick = onNavigateToAddProduct,
+                onClick = { viewModel.onNewPurchaseClicked(onNavigateToAddProduct) },
                 shape = RoundedCornerShape(18.dp),
                 containerColor = MaterialTheme.colorScheme.primary,
                 contentColor = MaterialTheme.colorScheme.onPrimary,
@@ -106,7 +123,17 @@ fun HomeScreen(
                 averagePerPurchase = uiState.averagePerPurchase
             )
 
-            Spacer(modifier = Modifier.height(20.dp))
+            Spacer(modifier = Modifier.height(18.dp))
+
+            // In-Progress Buy Card (if any)
+            uiState.inProgressBuy?.let { inProgress ->
+                InProgressBuyCard(
+                    buy = inProgress,
+                    onContinue = onNavigateToAddProduct,
+                    onDiscard = viewModel::onDiscardDraft
+                )
+                Spacer(modifier = Modifier.height(18.dp))
+            }
 
             Text(
                 text = "Historial de Compras",
@@ -118,10 +145,19 @@ fun HomeScreen(
             Spacer(modifier = Modifier.height(10.dp))
 
             if (uiState.buys.isEmpty()) {
-                EmptyHistoryView(
-                    onStartShopping = onNavigateToAddProduct,
-                    modifier = Modifier.padding(top = 12.dp)
-                )
+                if (uiState.inProgressBuy == null) {
+                    EmptyHistoryView(
+                        onStartShopping = { viewModel.onNewPurchaseClicked(onNavigateToAddProduct) },
+                        modifier = Modifier.padding(top = 12.dp)
+                    )
+                } else {
+                    Text(
+                        text = "Aún no tienes compras finalizadas en el historial.",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.padding(top = 16.dp)
+                    )
+                }
             } else {
                 LazyColumn(
                     modifier = Modifier.fillMaxWidth(),

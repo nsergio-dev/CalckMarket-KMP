@@ -4,6 +4,7 @@ import com.nsergiodev.calckmarket.features.addproduct.domain.model.MarketType
 import com.nsergiodev.calckmarket.features.addproduct.domain.model.Product
 
 data class AddProductUiState(
+    val draftId: String = "",
     val marketName: String = MarketType.D1.displayName,
     val selectedMarketType: MarketType = MarketType.D1,
     val products: List<Product> = emptyList(),

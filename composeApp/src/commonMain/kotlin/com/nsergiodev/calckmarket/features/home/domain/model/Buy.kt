@@ -11,7 +11,8 @@ data class Buy(
     val marketName: String,
     val dateEpochMillis: Long,
     val products: List<Product>,
-    val paidAmount: Double = products.sumOf { it.total }
+    val paidAmount: Double = products.sumOf { it.total },
+    val isCompleted: Boolean = true
 ) {
     val totalAmount: Double
         get() = products.sumOf { it.total }

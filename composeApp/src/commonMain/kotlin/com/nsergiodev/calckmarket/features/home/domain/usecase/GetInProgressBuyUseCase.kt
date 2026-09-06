@@ -4,8 +4,8 @@ import com.nsergiodev.calckmarket.features.home.domain.model.Buy
 import com.nsergiodev.calckmarket.features.home.domain.repository.HomeRepository
 import kotlinx.coroutines.flow.Flow
 
-class GetBuysUseCase(
+class GetInProgressBuyUseCase(
     private val repository: HomeRepository
 ) {
-    operator fun invoke(): Flow<List<Buy>> = repository.getCompletedBuys()
+    operator fun invoke(): Flow<Buy?> = repository.getInProgressBuy()
 }

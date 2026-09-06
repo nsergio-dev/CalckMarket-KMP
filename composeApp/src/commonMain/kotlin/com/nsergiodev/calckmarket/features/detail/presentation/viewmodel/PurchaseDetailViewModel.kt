@@ -20,7 +20,7 @@ data class PurchaseDetailUiState(
 
 class PurchaseDetailViewModel(
     private val buyId: String,
-    private val getBuyDetailUseCase: GetBuyDetailUseCase = GetBuyDetailUseCase()
+    private val getBuyDetailUseCase: GetBuyDetailUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(PurchaseDetailUiState())
